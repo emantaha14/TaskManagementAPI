@@ -20,6 +20,7 @@ namespace TaskManagementApi
                     builder.Configuration.GetConnectionString("DefaultConnection"));
             });
             builder.Services.AddScoped<TaskService>();
+            builder.Services.AddScoped<AuthService>();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddEndpointsApiExplorer();
            
