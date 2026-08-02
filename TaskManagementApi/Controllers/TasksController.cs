@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using TaskManagementApi.DTOs;
 using TaskManagementApi.Models;
 using TaskManagementApi.Services;
-
+using Microsoft.AspNetCore.Authorization;
 namespace TaskManagementApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class TasksController : ControllerBase
