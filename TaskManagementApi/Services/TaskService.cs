@@ -1,37 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using TaskManagementApi.Data;
 using TaskManagementApi.DTOs;
 using TaskManagementApi.Models;
+using TaskManagementApi.Repositories;
 
 namespace TaskManagementApi.Services
 {
     public class TaskService
     {
-        private readonly AppDbContext _dbContext;
-        public TaskService(AppDbContext dbContenct)
+        private readonly ITaskRepository _taskRepository;
+        private readonly IMapper _mapper;
+        public TaskService(ITaskRepository taskRepository, IMapper mapper)
         {
-            _dbContext = dbContenct;
+            _taskRepository = taskRepository;
+            _mapper = mapper;
         }
         public async Task<List<TaskItem>> GetAll()
         {
-            return  await _dbContext.Tasks.AsNoTracking().ToListAsync();
+            return  await _taskRepository.GetAllAsync();
         }
 
         public async Task<TaskItem?> GetById(int id)
         {
-            return await _dbContext.Tasks.FirstOrDefaultAsync(task => task.Id == id);
+            return await _taskRepository.GetByIdAsync(id);
         }
 
         public async Task<TaskItem> Add(CreateTaskDto dto)
         {
-            var task = new TaskItem
-            {
-                Title = dto.Title,
-                IsCompleted = dto.IsCompleted,
-            };
-
-            _dbContext.Tasks.Add(task);
-            await _dbContext.SaveChangesAsync();
+            var task = _mapper.Map<TaskItem>(dto);
+            await _taskRepository.AddAsync(task);
+            await _taskRepository.SaveAsync();
 
             return task;
         }
@@ -40,10 +39,9 @@ namespace TaskManagementApi.Services
         {
             var task = await GetById(id);
             if (task == null) return false;
-
-                task.Title = dto.Title;
-                task.IsCompleted = dto.IsCompleted;
-            await _dbContext.SaveChangesAsync();
+            _mapper.Map(dto, task);
+             _taskRepository.Update(task);
+            await _taskRepository.SaveAsync();
             
             return true;
         }
@@ -54,8 +52,8 @@ namespace TaskManagementApi.Services
             if (task == null) return false;
             else
             {
-                _dbContext.Tasks.Remove(task);
-                await _dbContext.SaveChangesAsync();
+                 _taskRepository.Delete(task);
+                await _taskRepository.SaveAsync();
                 return true;
             }
         }

@@ -1,10 +1,11 @@
 
-using Microsoft.EntityFrameworkCore;
-using TaskManagementApi.Data;
-using TaskManagementApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using TaskManagementApi.Data;
+using TaskManagementApi.Repositories;
+using TaskManagementApi.Services;
 namespace TaskManagementApi
 {
     public class Program
@@ -48,6 +49,8 @@ namespace TaskManagementApi
             builder.Services.AddEndpointsApiExplorer();
            
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             var app = builder.Build();
 
